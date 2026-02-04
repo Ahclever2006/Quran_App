@@ -24,7 +24,7 @@ flutter pub get                # Install dependencies
 ## Tech Stack & Architecture
 
 - **SDK:** Dart ^3.9.0, Flutter 3.35.2
-- **Target architecture:** Clean Architecture + BLoC/Cubit (not yet implemented — currently default counter boilerplate)
+- **Target architecture:** Clean Architecture + BLoC/Cubit
 - **Required packages (per spec):** Dio (HTTP), Dartz (functional programming), sizeHelper (responsive sizing)
 - **External API:** AlQuran Cloud (`https://api.alquran.cloud/api`) — free, no auth required
 - **Backend:** Python FastAPI with WebSocket for streaming audio and receiving alignment events
@@ -35,7 +35,8 @@ flutter pub get                # Install dependencies
 - **Dark mode and light mode required.** Both themes must be supported.
 - **RTL text display** for Quranic Arabic content.
 - **Android package name:** `com.example.quran_app`
+- **Generic UseCase pattern required.** All use cases must extend the base `UseCase<Output, Params>` class in `lib/core/usecases/usecase.dart`. Use `NoParams` for use cases that take no parameters.
 
 ## Current State
 
-The project is boilerplate — `lib/main.dart` contains only the default Flutter counter demo. No feature code, models, services, or architecture layers exist yet. Tests cover only the counter demo.
+Clean Architecture is implemented with domain/data/presentation layers under `lib/features/recitation/`. Core utilities (DI, error handling, theming, networking, generic UseCase) live under `lib/core/`.
