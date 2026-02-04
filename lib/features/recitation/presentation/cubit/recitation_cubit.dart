@@ -23,7 +23,10 @@ class RecitationCubit extends Cubit<RecitationState> {
 
   Future<void> loadAyah(int surahNumber, int ayahNumber) async {
     emit(const RecitationLoading());
-    final result = await _getAyah(surahNumber, ayahNumber);
+    final result = await _getAyah(GetAyahParams(
+      surahNumber: surahNumber,
+      ayahNumber: ayahNumber,
+    ));
     result.fold(
       (failure) => emit(RecitationError(failure.message)),
       (ayah) => emit(RecitationReady(ayah: ayah)),
