@@ -57,50 +57,46 @@ class _SurahSelectorState extends State<SurahSelector> {
           return const SizedBox.shrink();
         }
 
-        return Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              flex: 3,
-              child: DropdownButtonFormField<Surah>(
-                initialValue: _selectedSurah,
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Surah',
-                  border: OutlineInputBorder(),
-                ),
-                items: state.surahs.map((surah) {
-                  return DropdownMenuItem(
-                    value: surah,
-                    child: Text(
-                      '${surah.number}. ${surah.englishName}',
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  );
-                }).toList(),
-                onChanged: (surah) {
-                  setState(() {
-                    _selectedSurah = surah;
-                    _ayahController.text = '1';
-                  });
-                },
+            DropdownButtonFormField<Surah>(
+              initialValue: _selectedSurah,
+              isExpanded: true,
+              decoration: const InputDecoration(
+                labelText: 'Surah',
+                border: OutlineInputBorder(),
+              ),
+              items: state.surahs.map((surah) {
+                return DropdownMenuItem(
+                  value: surah,
+                  child: Text(
+                    '${surah.number}. ${surah.englishName}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
+              onChanged: (surah) {
+                setState(() {
+                  _selectedSurah = surah;
+                  _ayahController.text = '1';
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _ayahController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Ayah',
+                border: const OutlineInputBorder(),
+                hintText: _selectedSurah != null
+                    ? '1-${_selectedSurah!.numberOfAyahs}'
+                    : '',
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 1,
-              child: TextFormField(
-                controller: _ayahController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Ayah',
-                  border: const OutlineInputBorder(),
-                  hintText: _selectedSurah != null
-                      ? '1-${_selectedSurah!.numberOfAyahs}'
-                      : '',
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
+            const SizedBox(height: 12),
             FilledButton(
               onPressed: _selectedSurah == null
                   ? null

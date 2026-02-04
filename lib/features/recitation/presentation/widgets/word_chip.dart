@@ -5,27 +5,31 @@ import '../../domain/entities/recitation_progress.dart';
 class WordChip extends StatelessWidget {
   final String word;
   final WordStatus status;
+  final bool isRevealed;
 
   const WordChip({
     super.key,
     required this.word,
     required this.status,
+    this.isRevealed = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final recitationColors = Theme.of(context).extension<RecitationColors>()!;
-    final color = _colorForStatus(recitationColors);
+    final color =
+        isRevealed ? _colorForStatus(recitationColors) : Colors.transparent;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      child: Text(
-        word,
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+      child: AnimatedDefaultTextStyle(
+        duration: const Duration(milliseconds: 300),
+        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
               color: color,
               fontWeight:
                   status == WordStatus.cursor ? FontWeight.bold : FontWeight.normal,
             ),
+        child: Text(word),
       ),
     );
   }

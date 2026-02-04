@@ -9,6 +9,7 @@ import '../../features/recitation/domain/repositories/recitation_repository.dart
 import '../../features/recitation/domain/usecases/get_ayah.dart';
 import '../../features/recitation/domain/usecases/get_surah_list.dart';
 import '../../features/recitation/presentation/cubit/recitation_cubit.dart';
+import '../../features/recitation/presentation/cubit/recording_timer_cubit.dart';
 import '../../features/recitation/presentation/cubit/surah_list_cubit.dart';
 
 final sl = GetIt.instance;
@@ -50,5 +51,8 @@ void initDependencies() {
       repository: sl(),
       audioService: sl(),
     ),
+  );
+  sl.registerFactory(
+    () => RecordingTimerCubit(),
   );
 }

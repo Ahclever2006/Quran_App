@@ -32,4 +32,18 @@ class AppColors {
   static const Color mistakeDark = Color(0xFFEF5350);
   static const Color pendingLight = Color(0xFF757575);
   static const Color pendingDark = Color(0xFFBDBDBD);
+
+  // FAB colors
+  static const Color fabIdleLight = Color(0xFF2E7D32);
+  static const Color fabIdleDark = Color(0xFF388E3C);
+  static const Color fabRecordingLight = Color(0xFF1B5E20);
+  static const Color fabRecordingDark = Color(0xFF2E7D32);
+
+  // Recording indicator
+  static const Color recordingIndicatorLight = Color(0xFFD32F2F);
+  static const Color recordingIndicatorDark = Color(0xFFEF5350);
+
+  // Ayah marker
+  static const Color ayahMarkerLight = Color(0xFF1B5E20);
+  static const Color ayahMarkerDark = Color(0xFF81C784);
 }

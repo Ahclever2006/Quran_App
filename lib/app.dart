@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/di/injection_container.dart';
 import 'core/theme/app_theme.dart';
 import 'features/recitation/presentation/cubit/recitation_cubit.dart';
+import 'features/recitation/presentation/cubit/recording_timer_cubit.dart';
 import 'features/recitation/presentation/cubit/surah_list_cubit.dart';
 import 'features/recitation/presentation/screens/recitation_screen.dart';
 
@@ -18,6 +19,9 @@ class QuranApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => sl<RecitationCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => sl<RecordingTimerCubit>(),
         ),
       ],
       child: MaterialApp(
