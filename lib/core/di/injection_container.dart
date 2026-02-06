@@ -7,6 +7,7 @@ import '../../features/recitation/domain/usecases/get_surah_list.dart';
 import '../../features/recitation/presentation/cubit/recitation_cubit.dart';
 import '../../features/recitation/presentation/cubit/recording_timer_cubit.dart';
 import '../../features/recitation/presentation/cubit/surah_list_cubit.dart';
+import '../../features/settings/presentation/cubit/settings_cubit.dart';
 import '../../features/speech/recitation_matching_service.dart';
 import '../../features/speech/speech_recognition_service.dart';
 
@@ -44,5 +45,8 @@ void initDependencies() {
   );
   sl.registerFactory(
     () => RecordingTimerCubit(),
+  );
+  sl.registerLazySingleton(
+    () => SettingsCubit(),
   );
 }

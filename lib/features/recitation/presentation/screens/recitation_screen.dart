@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/recitation_progress.dart';
+import '../../../settings/presentation/cubit/settings_cubit.dart';
 import '../cubit/recitation_cubit.dart';
 import '../cubit/recitation_state.dart';
 import '../cubit/recording_timer_cubit.dart';
@@ -102,7 +103,7 @@ class RecitationScreen extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.settings_outlined),
-          onPressed: () {},
+          onPressed: () => _showSettings(context),
           tooltip: 'Settings',
         ),
       ],
@@ -143,7 +144,14 @@ class RecitationScreen extends StatelessWidget {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(
-          child: SurahDisplay(ayahs: state.ayahs),
+          child: BlocBuilder<SettingsCubit, SettingsState>(
+            builder: (context, settings) {
+              return SurahDisplay(
+                ayahs: state.ayahs,
+                showHelpWords: settings.showHelpWords,
+              );
+            },
+          ),
         ),
       );
     }
@@ -152,9 +160,14 @@ class RecitationScreen extends StatelessWidget {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(
-          child: SurahDisplay(
-            ayahs: state.ayahs,
-            progress: state.progress,
+          child: BlocBuilder<SettingsCubit, SettingsState>(
+            builder: (context, settings) {
+              return SurahDisplay(
+                ayahs: state.ayahs,
+                progress: state.progress,
+                showHelpWords: settings.showHelpWords,
+              );
+            },
           ),
         ),
       );
@@ -172,6 +185,46 @@ class RecitationScreen extends StatelessWidget {
       return count;
     }
     return 0;
+  }
+
+  void _showSettings(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (bottomSheetContext) {
+        return BlocBuilder<SettingsCubit, SettingsState>(
+          bloc: context.read<SettingsCubit>(),
+          builder: (_, settings) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Settings',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    SwitchListTile(
+                      title: const Text('Show help words'),
+                      subtitle: const Text(
+                        'Preview the next word while reciting',
+                      ),
+                      value: settings.showHelpWords,
+                      onChanged: (_) {
+                        context.read<SettingsCubit>().toggleShowHelpWords();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
 

@@ -7,11 +7,13 @@ import 'word_chip.dart';
 class SurahDisplay extends StatelessWidget {
   final List<Ayah> ayahs;
   final RecitationProgress? progress;
+  final bool showHelpWords;
 
   const SurahDisplay({
     super.key,
     required this.ayahs,
     this.progress,
+    this.showHelpWords = false,
   });
 
   @override
@@ -39,7 +41,9 @@ class SurahDisplay extends StatelessWidget {
         final status = wordStatuses != null && wordIdx < wordStatuses.length
             ? wordStatuses[wordIdx]
             : WordStatus.pending;
-        final isRevealed = progress != null && status != WordStatus.pending;
+        final isRevealed = status == WordStatus.confirmed ||
+            status == WordStatus.mistake ||
+            (showHelpWords && status == WordStatus.cursor);
         children.add(WordChip(
           word: ayah.recitationWords[wordIdx],
           status: status,
