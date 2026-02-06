@@ -7,6 +7,9 @@ class SpeechRecognitionService {
   final _recognizedTextController = StreamController<String>.broadcast();
   bool _isListening = false;
   bool _shouldBeListening = false;
+  // Accumulated finalized text from previous speech sessions so progress
+  // is not lost when the engine auto-restarts after a timeout.
+  String _accumulatedText = '';
 
   Stream<String> get recognizedWords => _recognizedTextController.stream;
   bool get isListening => _isListening;
@@ -30,6 +33,7 @@ class SpeechRecognitionService {
 
   Future<void> startListening() async {
     _shouldBeListening = true;
+    _accumulatedText = '';
     await _beginListenSession();
   }
 
@@ -49,7 +53,17 @@ class SpeechRecognitionService {
 
   void _onResult(SpeechRecognitionResult result) {
     if (result.recognizedWords.isNotEmpty) {
-      _recognizedTextController.add(result.recognizedWords);
+      // Prepend accumulated text from previous sessions so the matching
+      // service always sees the full history of spoken words.
+      final fullText = _accumulatedText.isEmpty
+          ? result.recognizedWords
+          : '$_accumulatedText ${result.recognizedWords}';
+      _recognizedTextController.add(fullText);
+      // When the engine finalizes a session, save the full text so the
+      // next auto-restarted session can build on it.
+      if (result.finalResult) {
+        _accumulatedText = fullText;
+      }
     }
   }
 
