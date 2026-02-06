@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import '../../core/utils/arabic_text_utils.dart';
 import '../recitation/domain/entities/ayah.dart';
 import '../recitation/domain/entities/recitation_progress.dart';
@@ -7,7 +8,9 @@ class RecitationMatchingService {
   List<Ayah> _ayahs = [];
   // Flattened list of expected words across all ayahs
   List<_ExpectedWord> _expectedWords = [];
-  int _matchedCount = 0;
+  // Locked-in statuses for words already evaluated. Once a word is locked
+  // it keeps its status regardless of future partial-result revisions.
+  List<WordStatus> _lockedStatuses = [];
 
   final _progressController =
       StreamController<RecitationProgress>.broadcast();
@@ -16,7 +19,7 @@ class RecitationMatchingService {
 
   void initialize(List<Ayah> ayahs) {
     _ayahs = ayahs;
-    _matchedCount = 0;
+    _lockedStatuses = [];
     _expectedWords = [];
     for (var i = 0; i < ayahs.length; i++) {
       for (var j = 0; j < ayahs[i].recitationWords.length; j++) {
@@ -35,20 +38,19 @@ class RecitationMatchingService {
         fullText.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
     if (spokenWords.isEmpty) return;
 
-    var newMatchedCount = 0;
-    for (var i = 0; i < spokenWords.length && i < _expectedWords.length; i++) {
-      if (ArabicTextUtils.wordsMatch(
-          spokenWords[i], _expectedWords[i].text)) {
-        newMatchedCount = i + 1;
-      } else {
-        // Mark this as a mistake but continue advancing
-        newMatchedCount = i + 1;
-      }
+    final lockedCount = _lockedStatuses.length;
+
+    // Lock all spoken words except the last one — the last word in a
+    // partial result is still being refined by the recognizer.
+    final lockUpTo = min(spokenWords.length - 1, _expectedWords.length);
+
+    for (var i = lockedCount; i < lockUpTo; i++) {
+      final matches =
+          ArabicTextUtils.wordsMatch(spokenWords[i], _expectedWords[i].text);
+      _lockedStatuses.add(
+          matches ? WordStatus.confirmed : WordStatus.mistake);
     }
 
-    if (newMatchedCount != _matchedCount) {
-      _matchedCount = newMatchedCount;
-    }
     _emitProgressFromSpoken(spokenWords);
   }
 
@@ -59,16 +61,20 @@ class RecitationMatchingService {
           _ayahs[i].recitationWords.length, WordStatus.pending);
     }
 
-    // Determine current position in flattened list
+    final lockedCount = _lockedStatuses.length;
     final totalSpoken = spokenWords.length;
 
     for (var i = 0; i < _expectedWords.length; i++) {
       final ew = _expectedWords[i];
-      if (i < totalSpoken) {
+      if (i < lockedCount) {
+        // Use the locked status — already evaluated and stable
+        statuses[ew.ayahIndex]![ew.wordIndex] = _lockedStatuses[i];
+      } else if (i < totalSpoken) {
+        // Trailing (unlocked) spoken word — evaluate live but don't persist
         final matches =
             ArabicTextUtils.wordsMatch(spokenWords[i], ew.text);
         statuses[ew.ayahIndex]![ew.wordIndex] =
-            matches ? WordStatus.confirmed : WordStatus.mistake;
+            matches ? WordStatus.confirmed : WordStatus.cursor;
       } else if (i == totalSpoken) {
         statuses[ew.ayahIndex]![ew.wordIndex] = WordStatus.cursor;
       }
@@ -111,7 +117,7 @@ class RecitationMatchingService {
   }
 
   void reset() {
-    _matchedCount = 0;
+    _lockedStatuses = [];
     if (_ayahs.isNotEmpty) {
       _emitProgress();
     }
