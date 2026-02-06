@@ -239,6 +239,7 @@ class _MistakeToastListener extends StatefulWidget {
 
 class _MistakeToastListenerState extends State<_MistakeToastListener> {
   int _previousMistakeCount = 0;
+  bool _isToastVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -250,15 +251,19 @@ class _MistakeToastListenerState extends State<_MistakeToastListener> {
             currentMistakes +=
                 statuses.where((s) => s == WordStatus.mistake).length;
           }
-          if (currentMistakes > _previousMistakeCount) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Mistake detected'),
-                backgroundColor: Theme.of(context).colorScheme.error,
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+          if (currentMistakes > _previousMistakeCount && !_isToastVisible) {
+            _isToastVisible = true;
+            ScaffoldMessenger.of(context)
+                .showSnackBar(
+                  SnackBar(
+                    content: const Text('Mistake detected'),
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                )
+                .closed
+                .then((_) => _isToastVisible = false);
           }
           _previousMistakeCount = currentMistakes;
         } else if (state is RecitationIdle || state is RecitationReady) {
