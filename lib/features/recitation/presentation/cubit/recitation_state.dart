@@ -18,22 +18,28 @@ class RecitationLoading extends RecitationState {
 }
 
 class RecitationReady extends RecitationState {
-  final Ayah ayah;
+  final List<Ayah> ayahs;
+  final String surahName;
 
-  const RecitationReady({required this.ayah});
+  const RecitationReady({required this.ayahs, required this.surahName});
 
   @override
-  List<Object?> get props => [ayah];
+  List<Object?> get props => [ayahs, surahName];
 }
 
 class RecitationListening extends RecitationState {
-  final Ayah ayah;
+  final List<Ayah> ayahs;
+  final String surahName;
   final RecitationProgress progress;
 
-  const RecitationListening({required this.ayah, required this.progress});
+  const RecitationListening({
+    required this.ayahs,
+    required this.surahName,
+    required this.progress,
+  });
 
   @override
-  List<Object?> get props => [ayah, progress];
+  List<Object?> get props => [ayahs, surahName, progress];
 }
 
 class RecitationError extends RecitationState {

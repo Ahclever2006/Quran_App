@@ -1,45 +1,35 @@
 import 'package:get_it/get_it.dart';
-import '../network/api_client.dart';
-import '../../features/audio/audio_service.dart';
-import '../../features/audio/audio_service_stub.dart';
-import '../../features/recitation/data/datasources/quran_remote_data_source.dart';
-import '../../features/recitation/data/datasources/recitation_socket_data_source.dart';
+import '../../features/recitation/data/datasources/quran_local_data_source.dart';
 import '../../features/recitation/data/repositories/recitation_repository_impl.dart';
 import '../../features/recitation/domain/repositories/recitation_repository.dart';
-import '../../features/recitation/domain/usecases/get_ayah.dart';
+import '../../features/recitation/domain/usecases/get_surah_ayahs.dart';
 import '../../features/recitation/domain/usecases/get_surah_list.dart';
 import '../../features/recitation/presentation/cubit/recitation_cubit.dart';
 import '../../features/recitation/presentation/cubit/recording_timer_cubit.dart';
 import '../../features/recitation/presentation/cubit/surah_list_cubit.dart';
+import '../../features/speech/recitation_matching_service.dart';
+import '../../features/speech/speech_recognition_service.dart';
 
 final sl = GetIt.instance;
 
 void initDependencies() {
-  // Core
-  sl.registerLazySingleton(() => ApiClient());
-
-  // Audio
-  sl.registerLazySingleton<AudioService>(() => AudioServiceStub());
-
   // Data sources
-  sl.registerLazySingleton<QuranRemoteDataSource>(
-    () => QuranRemoteDataSourceImpl(dio: sl<ApiClient>().dio),
-  );
-  sl.registerLazySingleton<RecitationSocketDataSource>(
-    () => RecitationSocketDataSourceImpl(),
+  sl.registerLazySingleton<QuranLocalDataSource>(
+    () => QuranLocalDataSourceImpl(),
   );
 
   // Repository
   sl.registerLazySingleton<RecitationRepository>(
-    () => RecitationRepositoryImpl(
-      remoteDataSource: sl(),
-      socketDataSource: sl(),
-    ),
+    () => RecitationRepositoryImpl(localDataSource: sl()),
   );
 
   // Use cases
   sl.registerLazySingleton(() => GetSurahList(sl()));
-  sl.registerLazySingleton(() => GetAyah(sl()));
+  sl.registerLazySingleton(() => GetSurahAyahs(sl()));
+
+  // Services
+  sl.registerFactory(() => SpeechRecognitionService());
+  sl.registerFactory(() => RecitationMatchingService());
 
   // Cubits
   sl.registerFactory(
@@ -47,9 +37,9 @@ void initDependencies() {
   );
   sl.registerFactory(
     () => RecitationCubit(
-      getAyah: sl(),
-      repository: sl(),
-      audioService: sl(),
+      getSurahAyahs: sl(),
+      speechService: sl(),
+      matchingService: sl(),
     ),
   );
   sl.registerFactory(

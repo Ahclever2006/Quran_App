@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Quran Recitation Coach — a Flutter app that listens to a user reciting Quran, tracks the selected ayah word-by-word, detects mistakes (mock in MVP), and highlights the correctly read portion incrementally. The backend is a Python FastAPI server communicating via WebSocket.
+Quran Recitation Coach — a Flutter app that listens to a user reciting Quran, tracks word-by-word across an entire surah, detects mistakes via on-device speech recognition, and highlights the correctly read portion incrementally. Fully offline — uses local JSON Mushaf data and the `speech_to_text` package.
 
 Full requirements are in `specs/initial_requirements.md`.
 
@@ -25,9 +25,9 @@ flutter pub get                # Install dependencies
 
 - **SDK:** Dart ^3.9.0, Flutter 3.35.2
 - **Target architecture:** Clean Architecture + BLoC/Cubit
-- **Required packages (per spec):** Dio (HTTP), Dartz (functional programming), sizeHelper (responsive sizing)
-- **External API:** AlQuran Cloud (`https://api.alquran.cloud/api`) — free, no auth required
-- **Backend:** Python FastAPI with WebSocket for streaming audio and receiving alignment events
+- **Required packages:** Dartz (functional programming), sizeHelper (responsive sizing), speech_to_text (on-device Arabic speech recognition)
+- **Data source:** Local JSON (`lib/assets/qpc-hafs.json`) + static surah metadata (`lib/core/constants/surah_metadata.dart`)
+- **Speech:** `speech_to_text` package with `ar` locale, dictation mode, auto-restart on timeout
 
 ## Mandatory Coding Rules
 
@@ -39,4 +39,9 @@ flutter pub get                # Install dependencies
 
 ## Current State
 
-Clean Architecture is implemented with domain/data/presentation layers under `lib/features/recitation/`. Core utilities (DI, error handling, theming, networking, generic UseCase) live under `lib/core/`.
+Clean Architecture with domain/data/presentation layers under `lib/features/recitation/`. Speech services under `lib/features/speech/`. Core utilities (DI, error handling, theming, Arabic text utils, generic UseCase) under `lib/core/`.
+
+Key flows:
+- **Surah selection:** Drawer → SurahSelector → RecitationCubit.loadSurah() → loads all ayahs from local JSON
+- **Recitation:** FAB → startRecitation() → SpeechRecognitionService listens → RecitationMatchingService compares spoken vs expected words → progress stream updates UI
+- **Display:** SurahDisplay widget shows all ayahs in continuous RTL Wrap with WordChips colored by status + AyahNumberMarkers between ayahs

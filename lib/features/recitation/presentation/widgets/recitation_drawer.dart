@@ -17,7 +17,7 @@ class RecitationDrawer extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               color: Theme.of(context).colorScheme.primaryContainer,
               child: Text(
-                'Select Surah & Ayah',
+                'Select Surah',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Theme.of(context)
                           .colorScheme
@@ -28,10 +28,10 @@ class RecitationDrawer extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: SurahSelector(
-                onAyahSelected: (surahNumber, ayahNumber) {
+                onSurahSelected: (surahNumber, surahName) {
                   context
                       .read<RecitationCubit>()
-                      .loadAyah(surahNumber, ayahNumber);
+                      .loadSurah(surahNumber, surahName);
                   Navigator.of(context).pop();
                 },
               ),

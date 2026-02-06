@@ -20,3 +20,7 @@ class ConnectionFailure extends Failure {
 class WebSocketFailure extends Failure {
   const WebSocketFailure(super.message);
 }
+
+class CacheFailure extends Failure {
+  const CacheFailure(super.message);
+}

@@ -17,4 +17,13 @@ class AyahModel extends Ayah {
       numberInSurah: json['numberInSurah'] as int,
     );
   }
+
+  factory AyahModel.fromLocalJson(Map<String, dynamic> json) {
+    return AyahModel(
+      number: json['id'] as int,
+      text: json['text'] as String,
+      surahNumber: json['surah'] as int,
+      numberInSurah: json['ayah'] as int,
+    );
+  }
 }

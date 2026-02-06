@@ -4,12 +4,10 @@ import '../../domain/entities/recitation_progress.dart';
 import '../cubit/recitation_cubit.dart';
 import '../cubit/recitation_state.dart';
 import '../cubit/recording_timer_cubit.dart';
-import '../cubit/surah_list_cubit.dart';
-import '../cubit/surah_list_state.dart';
-import '../widgets/ayah_word_display.dart';
 import '../widgets/recitation_bottom_toolbar.dart';
 import '../widgets/recitation_drawer.dart';
 import '../widgets/recitation_fab.dart';
+import '../widgets/surah_display.dart';
 
 class RecitationScreen extends StatelessWidget {
   const RecitationScreen({super.key});
@@ -66,21 +64,12 @@ class RecitationScreen extends StatelessWidget {
     String title = 'Quran Recitation Coach';
     String? subtitle;
 
-    if (state is RecitationReady || state is RecitationListening) {
-      final ayah = state is RecitationReady
-          ? state.ayah
-          : (state as RecitationListening).ayah;
-
-      final surahListState = context.read<SurahListCubit>().state;
-      if (surahListState is SurahListLoaded) {
-        final surah = surahListState.surahs
-            .where((s) => s.number == ayah.surahNumber)
-            .firstOrNull;
-        if (surah != null) {
-          title = surah.englishName;
-        }
-      }
-      subtitle = 'Ayah ${ayah.numberInSurah}';
+    if (state is RecitationReady) {
+      title = state.surahName;
+      subtitle = '${state.ayahs.length} ayahs';
+    } else if (state is RecitationListening) {
+      title = state.surahName;
+      subtitle = '${state.ayahs.length} ayahs';
     }
 
     return AppBar(
@@ -124,7 +113,7 @@ class RecitationScreen extends StatelessWidget {
     if (state is RecitationIdle) {
       return Center(
         child: Text(
-          'Select a surah and ayah to begin',
+          'Select a surah to begin',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context)
                     .colorScheme
@@ -154,7 +143,7 @@ class RecitationScreen extends StatelessWidget {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(
-          child: AyahWordDisplay(ayah: state.ayah),
+          child: SurahDisplay(ayahs: state.ayahs),
         ),
       );
     }
@@ -163,8 +152,8 @@ class RecitationScreen extends StatelessWidget {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(
-          child: AyahWordDisplay(
-            ayah: state.ayah,
+          child: SurahDisplay(
+            ayahs: state.ayahs,
             progress: state.progress,
           ),
         ),
@@ -176,9 +165,11 @@ class RecitationScreen extends StatelessWidget {
 
   int _countMistakes(RecitationState state) {
     if (state is RecitationListening) {
-      return state.progress.wordStatuses
-          .where((s) => s == WordStatus.mistake)
-          .length;
+      var count = 0;
+      for (final statuses in state.progress.ayahWordStatuses.values) {
+        count += statuses.where((s) => s == WordStatus.mistake).length;
+      }
+      return count;
     }
     return 0;
   }
@@ -201,9 +192,11 @@ class _MistakeToastListenerState extends State<_MistakeToastListener> {
     return BlocListener<RecitationCubit, RecitationState>(
       listener: (context, state) {
         if (state is RecitationListening) {
-          final currentMistakes = state.progress.wordStatuses
-              .where((s) => s == WordStatus.mistake)
-              .length;
+          var currentMistakes = 0;
+          for (final statuses in state.progress.ayahWordStatuses.values) {
+            currentMistakes +=
+                statuses.where((s) => s == WordStatus.mistake).length;
+          }
           if (currentMistakes > _previousMistakeCount) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

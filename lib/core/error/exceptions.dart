@@ -25,3 +25,12 @@ class WebSocketException implements Exception {
   @override
   String toString() => 'WebSocketException: $message';
 }
+
+class CacheException implements Exception {
+  final String message;
+
+  const CacheException(this.message);
+
+  @override
+  String toString() => 'CacheException: $message';
+}

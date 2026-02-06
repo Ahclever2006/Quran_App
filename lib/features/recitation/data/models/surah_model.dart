@@ -20,4 +20,15 @@ class SurahModel extends Surah {
       revelationType: json['revelationType'] as String,
     );
   }
+
+  factory SurahModel.fromMetadata(Map<String, dynamic> metadata) {
+    return SurahModel(
+      number: metadata['number'] as int,
+      name: metadata['name'] as String,
+      englishName: metadata['englishName'] as String,
+      englishNameTranslation: metadata['englishNameTranslation'] as String,
+      numberOfAyahs: metadata['numberOfAyahs'] as int,
+      revelationType: metadata['revelationType'] as String,
+    );
+  }
 }

@@ -5,9 +5,9 @@ import '../cubit/surah_list_cubit.dart';
 import '../cubit/surah_list_state.dart';
 
 class SurahSelector extends StatefulWidget {
-  final void Function(int surahNumber, int ayahNumber) onAyahSelected;
+  final void Function(int surahNumber, String surahName) onSurahSelected;
 
-  const SurahSelector({super.key, required this.onAyahSelected});
+  const SurahSelector({super.key, required this.onSurahSelected});
 
   @override
   State<SurahSelector> createState() => _SurahSelectorState();
@@ -15,13 +15,6 @@ class SurahSelector extends StatefulWidget {
 
 class _SurahSelectorState extends State<SurahSelector> {
   Surah? _selectedSurah;
-  final _ayahController = TextEditingController(text: '1');
-
-  @override
-  void dispose() {
-    _ayahController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,31 +73,18 @@ class _SurahSelectorState extends State<SurahSelector> {
               onChanged: (surah) {
                 setState(() {
                   _selectedSurah = surah;
-                  _ayahController.text = '1';
                 });
               },
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _ayahController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Ayah',
-                border: const OutlineInputBorder(),
-                hintText: _selectedSurah != null
-                    ? '1-${_selectedSurah!.numberOfAyahs}'
-                    : '',
-              ),
             ),
             const SizedBox(height: 12),
             FilledButton(
               onPressed: _selectedSurah == null
                   ? null
                   : () {
-                      final ayahNum =
-                          int.tryParse(_ayahController.text) ?? 1;
-                      widget.onAyahSelected(
-                          _selectedSurah!.number, ayahNum);
+                      widget.onSurahSelected(
+                        _selectedSurah!.number,
+                        _selectedSurah!.englishName,
+                      );
                     },
               child: const Text('Load'),
             ),
