@@ -2,8 +2,10 @@ class ArabicTextUtils {
   ArabicTextUtils._();
 
   // Arabic diacritics (tashkeel/harakat) and Uthmani marks
+  // NOTE: U+0670 (superscript alef) is excluded — it represents a hidden
+  // alef that is pronounced, so normalize() expands it to a full alef.
   static final _diacriticsRegex = RegExp(
-    '[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06ED\u08D3-\u08E1\u08E3-\u08FF\uFE70-\uFE7F]',
+    '[\u0610-\u061A\u064B-\u065F\u06D6-\u06DC\u06DF-\u06ED\u08D3-\u08E1\u08E3-\u08FF\uFE70-\uFE7F]',
   );
 
   // Uthmani ornamental markers (rub el hizb, sajdah, etc.)
@@ -16,7 +18,10 @@ class ArabicTextUtils {
   }
 
   static String normalize(String text) {
-    var result = removeDiacritics(text);
+    // Expand superscript alef to full alef before stripping diacritics
+    // (e.g. الرحمٰن → الرحمان — the hidden alef is pronounced)
+    var result = text.replaceAll('\u0670', '\u0627');
+    result = removeDiacritics(result);
     // Normalize alef variants to bare alef
     result = result.replaceAll(RegExp('[\u0622\u0623\u0625\u0671]'), '\u0627');
     // Normalize hamza variants
