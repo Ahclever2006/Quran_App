@@ -17,13 +17,10 @@ class Ayah extends Equatable {
         recitationWords = _buildRecitationWords(text);
 
   static List<String> _buildRecitationWords(String text) {
-    final allWords = text.split(' ');
-    if (allWords.isEmpty) return allWords;
-    final last = allWords.last;
-    // The trailing word is the ayah number marker if it's purely
-    // Arabic-Indic digits (٠١٢٣٤٥٦٧٨٩) — strip it for matching.
-    final isAyahNumber = RegExp(r'^[٠-٩]+$').hasMatch(last);
-    return isAyahNumber ? allWords.sublist(0, allWords.length - 1) : allWords;
+    // The JSON text ends with a non-breaking space (\u00A0) + Arabic-Indic
+    // digit(s) as the ayah number marker. Strip that before splitting.
+    final stripped = text.replaceAll(RegExp('\u00A0[\u0660-\u0669]+\$'), '');
+    return stripped.split(' ').where((w) => w.isNotEmpty).toList();
   }
 
   @override
