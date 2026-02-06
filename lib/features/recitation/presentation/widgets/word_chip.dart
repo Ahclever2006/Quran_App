@@ -22,14 +22,11 @@ class WordChip extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      child: AnimatedDefaultTextStyle(
-        duration: const Duration(milliseconds: 300),
+      child: Text(
+        word,
         style: Theme.of(context).textTheme.headlineSmall!.copyWith(
               color: color,
-              fontWeight:
-                  status == WordStatus.cursor ? FontWeight.bold : FontWeight.normal,
             ),
-        child: Text(word),
       ),
     );
   }
