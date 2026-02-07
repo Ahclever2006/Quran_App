@@ -8,12 +8,14 @@ class SurahDisplay extends StatelessWidget {
   final List<Ayah> ayahs;
   final RecitationProgress? progress;
   final bool showHelpWords;
+  final bool showAllText;
 
   const SurahDisplay({
     super.key,
     required this.ayahs,
     this.progress,
     this.showHelpWords = false,
+    this.showAllText = false,
   });
 
   @override
@@ -48,6 +50,7 @@ class SurahDisplay extends StatelessWidget {
           word: ayah.recitationWords[wordIdx],
           status: status,
           isRevealed: isRevealed,
+          showAllText: showAllText,
         ));
       }
       children.add(AyahNumberMarker(ayahNumber: ayah.numberInSurah));

@@ -6,19 +6,25 @@ class WordChip extends StatelessWidget {
   final String word;
   final WordStatus status;
   final bool isRevealed;
+  final bool showAllText;
 
   const WordChip({
     super.key,
     required this.word,
     required this.status,
     this.isRevealed = true,
+    this.showAllText = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final recitationColors = Theme.of(context).extension<RecitationColors>()!;
-    final color =
-        isRevealed ? _colorForStatus(recitationColors) : Colors.transparent;
+    final Color color;
+    if (showAllText) {
+      color = Theme.of(context).colorScheme.onSurface;
+    } else {
+      color = isRevealed ? _colorForStatus(recitationColors) : Colors.transparent;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),

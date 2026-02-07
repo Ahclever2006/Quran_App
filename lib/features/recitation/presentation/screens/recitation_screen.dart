@@ -10,8 +10,15 @@ import '../widgets/recitation_drawer.dart';
 import '../widgets/recitation_fab.dart';
 import '../widgets/surah_display.dart';
 
-class RecitationScreen extends StatelessWidget {
+class RecitationScreen extends StatefulWidget {
   const RecitationScreen({super.key});
+
+  @override
+  State<RecitationScreen> createState() => _RecitationScreenState();
+}
+
+class _RecitationScreenState extends State<RecitationScreen> {
+  bool _showAllText = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +30,7 @@ class RecitationScreen extends StatelessWidget {
           context.read<RecordingTimerCubit>().stop();
         } else if (state is RecitationIdle) {
           context.read<RecordingTimerCubit>().reset();
+          setState(() => _showAllText = false);
         }
       },
       child: _MistakeToastListener(
@@ -40,14 +48,14 @@ class RecitationScreen extends StatelessWidget {
               bottomNavigationBar: RecitationBottomToolbar(
                 isListening: isListening,
                 mistakeCount: mistakeCount,
-                onReset: () =>
-                    context.read<RecitationCubit>().resetRecitation(),
               ),
               floatingActionButton: RecitationFab(
                 isReady: isReady,
                 isListening: isListening,
-                onStart: () =>
-                    context.read<RecitationCubit>().startRecitation(),
+                onStart: () {
+                    setState(() => _showAllText = false);
+                    context.read<RecitationCubit>().startRecitation();
+                },
                 onStop: () =>
                     context.read<RecitationCubit>().stopRecitation(),
               ),
@@ -92,14 +100,24 @@ class RecitationScreen extends StatelessWidget {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.bookmark_border),
-          onPressed: () {},
-          tooltip: 'Bookmark',
+          icon: Icon(
+            _showAllText ? Icons.visibility_off : Icons.visibility,
+          ),
+          onPressed: () {
+            if (state is RecitationListening) {
+              context.read<RecitationCubit>().stopRecitation();
+            }
+            setState(() => _showAllText = !_showAllText);
+          },
+          tooltip: _showAllText ? 'Hide text' : 'Show text',
         ),
         IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {},
-          tooltip: 'Search',
+          icon: const Icon(Icons.refresh),
+          onPressed: () {
+            setState(() => _showAllText = false);
+            context.read<RecitationCubit>().resetRecitation();
+          },
+          tooltip: 'Reset',
         ),
         IconButton(
           icon: const Icon(Icons.settings_outlined),
@@ -149,6 +167,7 @@ class RecitationScreen extends StatelessWidget {
               return SurahDisplay(
                 ayahs: state.ayahs,
                 showHelpWords: settings.showHelpWords,
+                showAllText: _showAllText,
               );
             },
           ),
@@ -166,6 +185,7 @@ class RecitationScreen extends StatelessWidget {
                 ayahs: state.ayahs,
                 progress: state.progress,
                 showHelpWords: settings.showHelpWords,
+                showAllText: _showAllText,
               );
             },
           ),

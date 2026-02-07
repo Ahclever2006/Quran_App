@@ -6,13 +6,11 @@ import '../cubit/recording_timer_cubit.dart';
 class RecitationBottomToolbar extends StatelessWidget {
   final bool isListening;
   final int mistakeCount;
-  final VoidCallback onReset;
 
   const RecitationBottomToolbar({
     super.key,
     required this.isListening,
     required this.mistakeCount,
-    required this.onReset,
   });
 
   @override
@@ -59,11 +57,6 @@ class RecitationBottomToolbar extends StatelessWidget {
               visualDensity: VisualDensity.compact,
             ),
           const Spacer(),
-          IconButton(
-            onPressed: onReset,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Reset',
-          ),
           const SizedBox(width: 72),
         ],
       ),
