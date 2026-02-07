@@ -15,25 +15,21 @@ class QuranApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => sl<SurahListCubit>()..loadSurahs(),
-        ),
-        BlocProvider(
-          create: (_) => sl<RecitationCubit>(),
-        ),
-        BlocProvider(
-          create: (_) => sl<RecordingTimerCubit>(),
-        ),
-        BlocProvider(
-          create: (_) => sl<SettingsCubit>(),
-        ),
+        BlocProvider(create: (_) => sl<SurahListCubit>()..loadSurahs()),
+        BlocProvider(create: (_) => sl<RecitationCubit>()),
+        BlocProvider(create: (_) => sl<RecordingTimerCubit>()),
+        BlocProvider(create: (_) => sl<SettingsCubit>()),
       ],
-      child: MaterialApp(
-        title: 'Quran Recitation Coach',
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.system,
-        home: const RecitationScreen(),
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, settings) {
+          return MaterialApp(
+            title: 'Quran App',
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const RecitationScreen(),
+          );
+        },
       ),
     );
   }

@@ -53,11 +53,10 @@ class _RecitationScreenState extends State<RecitationScreen> {
                 isReady: isReady,
                 isListening: isListening,
                 onStart: () {
-                    setState(() => _showAllText = false);
-                    context.read<RecitationCubit>().startRecitation();
+                  setState(() => _showAllText = false);
+                  context.read<RecitationCubit>().startRecitation();
                 },
-                onStop: () =>
-                    context.read<RecitationCubit>().stopRecitation(),
+                onStop: () => context.read<RecitationCubit>().stopRecitation(),
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endDocked,
@@ -69,8 +68,10 @@ class _RecitationScreenState extends State<RecitationScreen> {
   }
 
   PreferredSizeWidget _buildAppBar(
-      BuildContext context, RecitationState state) {
-    String title = 'Quran Recitation Coach';
+    BuildContext context,
+    RecitationState state,
+  ) {
+    String title = 'Quran App';
     String? subtitle;
 
     if (state is RecitationReady) {
@@ -90,19 +91,16 @@ class _RecitationScreenState extends State<RecitationScreen> {
             Text(
               subtitle,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context)
-                        .appBarTheme
-                        .foregroundColor
-                        ?.withAlpha(179),
-                  ),
+                color: Theme.of(
+                  context,
+                ).appBarTheme.foregroundColor?.withAlpha(179),
+              ),
             ),
         ],
       ),
       actions: [
         IconButton(
-          icon: Icon(
-            _showAllText ? Icons.visibility_off : Icons.visibility,
-          ),
+          icon: Icon(_showAllText ? Icons.visibility_off : Icons.visibility),
           onPressed: () {
             if (state is RecitationListening) {
               context.read<RecitationCubit>().stopRecitation();
@@ -134,11 +132,8 @@ class _RecitationScreenState extends State<RecitationScreen> {
         child: Text(
           'Select a surah to begin',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withAlpha(153),
-              ),
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
+          ),
         ),
       );
     }
@@ -152,8 +147,8 @@ class _RecitationScreenState extends State<RecitationScreen> {
         child: Text(
           state.message,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
+            color: Theme.of(context).colorScheme.error,
+          ),
         ),
       );
     }
@@ -228,6 +223,16 @@ class _RecitationScreenState extends State<RecitationScreen> {
                       ),
                     ),
                     SwitchListTile(
+                      title: const Text('Dark mode'),
+                      subtitle: const Text(
+                        'Switch between light and dark theme',
+                      ),
+                      value: settings.isDarkMode,
+                      onChanged: (_) {
+                        context.read<SettingsCubit>().toggleDarkMode();
+                      },
+                    ),
+                    SwitchListTile(
                       title: const Text('Show help words'),
                       subtitle: const Text(
                         'Preview the next word while reciting',
@@ -268,8 +273,9 @@ class _MistakeToastListenerState extends State<_MistakeToastListener> {
         if (state is RecitationListening) {
           var currentMistakes = 0;
           for (final statuses in state.progress.ayahWordStatuses.values) {
-            currentMistakes +=
-                statuses.where((s) => s == WordStatus.mistake).length;
+            currentMistakes += statuses
+                .where((s) => s == WordStatus.mistake)
+                .length;
           }
           if (currentMistakes > _previousMistakeCount && !_isToastVisible) {
             _isToastVisible = true;

@@ -16,8 +16,9 @@ void main() {
     sl.reset();
   });
 
-  testWidgets('RecitationScreen renders with app bar and controls',
-      (WidgetTester tester) async {
+  testWidgets('RecitationScreen renders with app bar and controls', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
@@ -32,7 +33,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Quran Recitation Coach'), findsOneWidget);
+    expect(find.text('Quran App'), findsOneWidget);
     expect(find.text('Start'), findsOneWidget);
     expect(find.text('Reset'), findsOneWidget);
     expect(find.text('Select a surah and ayah to begin'), findsOneWidget);
