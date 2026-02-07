@@ -20,13 +20,15 @@ class QuranApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<RecordingTimerCubit>()),
         BlocProvider(create: (_) => sl<SettingsCubit>()),
       ],
-      child: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, settings) {
+      child: BlocSelector<SettingsCubit, SettingsState, bool>(
+        selector: (state) => state.isDarkMode,
+        builder: (context, isDarkMode) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'Quran App',
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const RecitationScreen(),
           );
         },

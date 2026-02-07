@@ -153,38 +153,23 @@ class _RecitationScreenState extends State<RecitationScreen> {
       );
     }
 
-    if (state is RecitationReady) {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Center(
-          child: BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, settings) {
-              return SurahDisplay(
-                ayahs: state.ayahs,
-                showHelpWords: settings.showHelpWords,
-                showAllText: _showAllText,
-              );
-            },
-          ),
-        ),
-      );
-    }
+    if (state is RecitationReady || state is RecitationListening) {
+      final ayahs = state is RecitationReady
+          ? state.ayahs
+          : (state as RecitationListening).ayahs;
+      final progress =
+          state is RecitationListening ? state.progress : null;
 
-    if (state is RecitationListening) {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Center(
-          child: BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, settings) {
-              return SurahDisplay(
-                ayahs: state.ayahs,
-                progress: state.progress,
-                showHelpWords: settings.showHelpWords,
-                showAllText: _showAllText,
-              );
-            },
-          ),
-        ),
+      return BlocSelector<SettingsCubit, SettingsState, bool>(
+        selector: (settings) => settings.showHelpWords,
+        builder: (context, showHelpWords) {
+          return SurahDisplay(
+            ayahs: ayahs,
+            progress: progress,
+            showHelpWords: showHelpWords,
+            showAllText: _showAllText,
+          );
+        },
       );
     }
 

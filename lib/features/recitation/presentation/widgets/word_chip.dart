@@ -18,10 +18,11 @@ class WordChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recitationColors = Theme.of(context).extension<RecitationColors>()!;
+    final theme = Theme.of(context);
+    final recitationColors = theme.extension<RecitationColors>()!;
     final Color color;
     if (showAllText) {
-      color = Theme.of(context).colorScheme.onSurface;
+      color = theme.colorScheme.onSurface;
     } else {
       color = isRevealed ? _colorForStatus(recitationColors) : Colors.transparent;
     }
@@ -30,7 +31,7 @@ class WordChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       child: Text(
         word,
-        style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+        style: theme.textTheme.headlineSmall!.copyWith(
               color: color,
             ),
       ),

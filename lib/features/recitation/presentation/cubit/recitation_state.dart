@@ -39,7 +39,7 @@ class RecitationListening extends RecitationState {
   });
 
   @override
-  List<Object?> get props => [ayahs, surahName, progress];
+  List<Object?> get props => [surahName, progress];
 }
 
 class RecitationError extends RecitationState {

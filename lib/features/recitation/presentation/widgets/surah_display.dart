@@ -22,12 +22,17 @@ class SurahDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Wrap(
-        alignment: WrapAlignment.start,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 4,
-        runSpacing: 8,
-        children: _buildChildren(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: RepaintBoundary(
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 4,
+            runSpacing: 8,
+            children: _buildChildren(),
+          ),
+        ),
       ),
     );
   }
@@ -40,21 +45,29 @@ class SurahDisplay extends StatelessWidget {
       for (var wordIdx = 0;
           wordIdx < ayah.recitationWords.length;
           wordIdx++) {
-        final status = wordStatuses != null && wordIdx < wordStatuses.length
-            ? wordStatuses[wordIdx]
-            : WordStatus.pending;
-        final isRevealed = status == WordStatus.confirmed ||
-            status == WordStatus.mistake ||
-            (showHelpWords && status == WordStatus.cursor);
         children.add(WordChip(
           word: ayah.recitationWords[wordIdx],
-          status: status,
-          isRevealed: isRevealed,
+          status: _statusAt(wordStatuses, wordIdx),
+          isRevealed: _isRevealed(wordStatuses, wordIdx),
           showAllText: showAllText,
         ));
       }
       children.add(AyahNumberMarker(ayahNumber: ayah.numberInSurah));
     }
     return children;
+  }
+
+  WordStatus _statusAt(List<WordStatus>? wordStatuses, int wordIdx) {
+    if (wordStatuses == null || wordIdx >= wordStatuses.length) {
+      return WordStatus.pending;
+    }
+    return wordStatuses[wordIdx];
+  }
+
+  bool _isRevealed(List<WordStatus>? wordStatuses, int wordIdx) {
+    final status = _statusAt(wordStatuses, wordIdx);
+    return status == WordStatus.confirmed ||
+        status == WordStatus.mistake ||
+        (showHelpWords && status == WordStatus.cursor);
   }
 }
